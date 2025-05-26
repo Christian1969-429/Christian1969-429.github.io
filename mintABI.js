@@ -1,7 +1,7 @@
 
 const mintContractAddress = '0x0E7211DaF1C855CfbE75A8799Ec723d1c69FF3a4';
 
-const mintABI [
+const mintABI =[
 	{
 		"inputs": [
 			{
