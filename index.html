@@ -94,8 +94,7 @@
   <div class="container">
     <h1>Mint Your Tokens</h1>
     <label for="tokenAmount">Number of Tokens</label>
-    <!-- Optional input if you enable amount selection -->
-    <!-- <input type="number" id="tokenAmount" placeholder="Enter amount" /> -->
+    <input type="number" id="tokenAmount" placeholder="Enter token amount" min="1" />
     <button onclick="mintTokens()">Mint</button>
 
     <section id="walletInfo">
@@ -151,9 +150,11 @@
     }
 
     async function mintTokens() {
-      var mintAmount = 3; // Change this or grab from input field
-      if (mintAmount <= 0) {
-        alert('Enter a valid number of tokens.');
+      var input = document.getElementById('tokenAmount').value;
+      var mintAmount = parseInt(input);
+
+      if (isNaN(mintAmount) || mintAmount <= 0) {
+        alert('Please enter a valid number of tokens greater than zero.');
         return;
       }
 
@@ -162,11 +163,12 @@
         const tx = await contractWithSigner.mintFunction(mintAmount);
         const receipt = await tx.wait();
         console.log(`Transaction successful: ${receipt.transactionHash}`);
+        document.getElementById('responseMessage').style.color = "#047857";
         document.getElementById('responseMessage').innerHTML = "✅ Tokens successfully minted!";
       } catch (error) {
         console.error("Mint error:", error);
-        document.getElementById('responseMessage').innerHTML = `❌ Error: ${error.message}`;
         document.getElementById('responseMessage').style.color = "#dc2626";
+        document.getElementById('responseMessage').innerHTML = `❌ Error: ${error.message}`;
       }
     }
   </script>
