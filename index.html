@@ -124,7 +124,7 @@
   <div class="container">
     <h1>Mint Your Gearcoin (GAS)</h1>
     <label for="tokenAmount">Number of GAS Tokens</label>
-    <input type="number" id="tokenAmount" placeholder="Enter token amount" min="1" />
+    <input type="number" id="tokenAmount" placeholder="Enter token amount" min="5" max="500" />
     <button onclick="mintTokens()">Mint</button>
 
     <section id="walletInfo">
@@ -137,6 +137,7 @@
   </div>
 
   <div class="ascii-art">
+    
  _________
  |         |
 _o_  _| ___=___ |_  _o_
@@ -194,8 +195,13 @@ _o_  _| ___=___ |_  _o_
       var input = document.getElementById('tokenAmount').value;
       var mintAmount = parseInt(input);
 
-      if (isNaN(mintAmount) || mintAmount <= 0) {
-        alert('Please enter a valid number of tokens greater than zero.');
+      if (isNaN(mintAmount) || mintAmount < 5) {
+        alert('You must mint at least 5 tokens.');
+        return;
+      }
+
+      if (mintAmount > 500) {
+        alert('You cannot mint more than 500 tokens at once.');
         return;
       }
 
