@@ -6,30 +6,29 @@
   <title>Gearcoin Minting</title>
   <style>
     body {
-     body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background: url('Site-pic.png') no-repeat center center fixed;
-  background-size: cover;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #000;
+      margin: 0;
+      padding: 0;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
     }
 
     .container {
-      background: rgba(0, 0, 0, 0.8);
+      background: #111;
       padding: 2rem 2.5rem;
       border-radius: 12px;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+      box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2);
       text-align: center;
       max-width: 400px;
       width: 100%;
+      margin: auto;
     }
 
     h1 {
-      color: #FFD700;
+      color: #fff;
       margin-bottom: 1rem;
     }
 
@@ -37,22 +36,24 @@
       font-size: 16px;
       display: block;
       margin-bottom: 8px;
-      color: #eee;
+      color: #ccc;
     }
 
     input {
       padding: 10px;
       width: 100%;
       margin-bottom: 1rem;
-      border: 1px solid #FFD700;
+      border: 1px solid #444;
+      background-color: #222;
+      color: #fff;
       border-radius: 6px;
       font-size: 16px;
     }
 
     button {
       padding: 10px 20px;
-      background-color: #FFD700;
-      color: black;
+      background-color: #e63946;
+      color: white;
       border: none;
       border-radius: 6px;
       font-size: 16px;
@@ -62,12 +63,12 @@
     }
 
     button:hover {
-      background-color: #e0c200;
+      background-color: #ff4d4d;
     }
 
     #walletInfo {
       margin-top: 2rem;
-      color: #eee;
+      color: #ccc;
       font-size: 14px;
     }
 
@@ -78,52 +79,53 @@
 
     #responseMessage {
       margin-top: 1rem;
-      font-size: 16px;
-      color: #47ff7e;
-      animation: pulse 1s ease-in-out;
+      font-size: 18px;
+      font-weight: bold;
+      animation: exhaustPop 0.6s ease-in-out;
     }
 
-    @keyframes pulse {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.2); }
-      100% { transform: scale(1); }
+    @keyframes exhaustPop {
+      0% { transform: scale(0.8); opacity: 0.2; }
+      50% { transform: scale(1.2); opacity: 1; }
+      100% { transform: scale(1); opacity: 1; }
     }
 
-    #hoursScreen {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      background-color: rgba(0, 0, 0, 0.95);
-      display: none;
-      justify-content: center;
-      align-items: center;
-      font-size: 3rem;
-      color: red;
-      z-index: 9999;
+    @keyframes flashOrangeYellow {
+      0%, 100% { color: orange; }
+      50% { color: yellow; }
+    }
+
+    .flash-orange-yellow {
+      animation: flashOrangeYellow 1s infinite;
+    }
+
+    .ascii-art {
+      width: 100%;
+      margin-top: auto;
+      padding: 1rem;
+      font-family: monospace;
+      font-size: 12px;
+      color: #888;
+      white-space: pre;
+      text-align: center;
     }
   </style>
 
   <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js" crossorigin="anonymous"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+          integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+          crossorigin="anonymous"></script>
   <script src="./mintABI.js" type="text/javascript"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.5.0/ethers.umd.min.js" type="application/javascript"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.5.0/ethers.umd.min.js"
+          type="application/javascript"></script>
 </head>
 
-<body onload="initializeSite()">
-  <audio id="bgAudio" autoplay loop>
-    <source src="01 Shoot to Thrill.mp3" type="audio/mpeg">
-    Your browser does not support the audio element.
-  </audio>
-
-  <div id="hoursScreen">Out of GAS! Come back later</div>
-
+<body onload="checkWallet()">
   <div class="container">
-    <h1>Mint Your Gearcoin</h1>
+    <h1>Mint Your Gearcoin (GAS)</h1>
     <label for="tokenAmount">Number of GAS Tokens</label>
     <input type="number" id="tokenAmount" placeholder="Enter token amount" min="1" />
-    <button onclick="mintTokens()">Mint GAS</button>
+    <button onclick="mintTokens()">Mint</button>
 
     <section id="walletInfo">
       <b>Wallet Status:</b>
@@ -134,37 +136,41 @@
     <h3><span id="responseMessage"></span></h3>
   </div>
 
+  <div class="ascii-art">
+                   __..-======-------..__  
+              . '    ______    ___________`.  
+            .' .--. '.-----.`. `.-----.-----`.  
+           / .'   | ||      `.` \\     \     \\            _  
+         .' /     | ||        \\ \\_____\_____\\__________[_]  
+        /   `-----' |'---------`\  .'                       \  
+       /============|============\'-------------------.._____|  
+    .-`---.         |-==.        |'.__________________  =====|-._  
+  .'        `.      |            |      .--------.    _` ====|  _ .  
+ /     __     \     |            |   .'           `. [_] `.==| [_] \  
+[   .`    `.  |     |            | .'     .---.     \      \=|     |  
+|  | / .-. '  |_____\___________/_/     .'---. `.    |     | |     |  
+ `-'| | O |'..`------------------'.....'/ .-. \ |    |       ___.--'  
+     \ `-' / /   `._.'                 | | O | |'___...----''___.--'  
+      `._.'.'                           \ `-' / [___...----''_.'  
+                                         `._.'.'  
+  </div>
+
   <script>
     var myWallet;
     var myContract;
     var provider;
     var signer;
 
-    function initializeSite() {
-      checkHours();
-      checkWallet();
-    }
-
-    function checkHours() {
-      const now = new Date();
-      const hour = now.getHours();
-      const min = now.getMinutes();
-      const totalMinutes = hour * 60 + min;
-      const start = 8 * 60 + 30;
-      const end = 22 * 60 + 30;
-
-      if (totalMinutes < start || totalMinutes > end) {
-        document.getElementById("hoursScreen").style.display = "flex";
-        document.body.style.overflow = "hidden";
-      }
-    }
-
     async function checkWallet() {
       var accountList = await ethereum.request({ method: 'eth_accounts' });
       myWallet = accountList[0];
 
       if (!myWallet) {
-        await window.ethereum.request({ method: "eth_requestAccounts" });
+        await window.ethereum.request({
+          method: "eth_requestAccounts",
+          params: [{ eth_accounts: {} }]
+        });
+
         accountList = await ethereum.request({ method: 'eth_accounts' });
         myWallet = accountList[0];
       }
@@ -174,7 +180,7 @@
         document.getElementById('walletStatus').style.color = "#dc2626";
         document.getElementById('walletButton').hidden = false;
       } else {
-        document.getElementById('walletStatus').innerHTML = "✔ Wallet Connected";
+        document.getElementById('walletStatus').innerHTML = "Wallet Connected";
         document.getElementById('walletStatus').style.color = "#10b981";
         document.getElementById("walletButton").hidden = true;
       }
@@ -206,12 +212,16 @@
         const tx = await contractWithSigner.mintFunction(mintAmount);
         const receipt = await tx.wait();
         console.log(`Transaction successful: ${receipt.transactionHash}`);
-        document.getElementById('responseMessage').style.color = "#47ff7e";
-        document.getElementById('responseMessage').innerHTML = "✅ GAS Tokens successfully minted! \uD83D\uDE97\u26FD️";
+
+        const responseEl = document.getElementById('responseMessage');
+        responseEl.classList.add('flash-orange-yellow');
+        responseEl.innerHTML = `GAS Tokens successfully minted! 🚗⛽️`;
       } catch (error) {
         console.error("Mint error:", error);
-        document.getElementById('responseMessage').style.color = "#ff4444";
-        document.getElementById('responseMessage').innerHTML = `❌ Error: ${error.message}`;
+        const responseEl = document.getElementById('responseMessage');
+        responseEl.classList.remove('flash-orange-yellow');
+        responseEl.style.color = "#dc2626";
+        responseEl.innerHTML = `❌ Error: ${error.message}`;
       }
     }
   </script>
