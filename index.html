@@ -3,31 +3,33 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>My Token Minting Page</title>
+  <title>Gearcoin Minting</title>
   <style>
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: #f3f4f6;
+      background: url('/mnt/data/screen-shot-2021-10-22-at-81201-am_900xx2372-1334-0-63.png') no-repeat center center fixed;
+      background-size: cover;
       margin: 0;
       padding: 0;
       display: flex;
       justify-content: center;
       align-items: center;
       height: 100vh;
+      color: white;
     }
 
     .container {
-      background: #fff;
+      background: rgba(0, 0, 0, 0.8);
       padding: 2rem 2.5rem;
       border-radius: 12px;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
       text-align: center;
       max-width: 400px;
       width: 100%;
     }
 
     h1 {
-      color: #111827;
+      color: #FFD700;
       margin-bottom: 1rem;
     }
 
@@ -35,22 +37,22 @@
       font-size: 16px;
       display: block;
       margin-bottom: 8px;
-      color: #374151;
+      color: #eee;
     }
 
     input {
       padding: 10px;
       width: 100%;
       margin-bottom: 1rem;
-      border: 1px solid #d1d5db;
+      border: 1px solid #FFD700;
       border-radius: 6px;
       font-size: 16px;
     }
 
     button {
       padding: 10px 20px;
-      background-color: #2563eb;
-      color: white;
+      background-color: #FFD700;
+      color: black;
       border: none;
       border-radius: 6px;
       font-size: 16px;
@@ -60,12 +62,12 @@
     }
 
     button:hover {
-      background-color: #1e40af;
+      background-color: #e0c200;
     }
 
     #walletInfo {
       margin-top: 2rem;
-      color: #374151;
+      color: #eee;
       font-size: 14px;
     }
 
@@ -77,25 +79,51 @@
     #responseMessage {
       margin-top: 1rem;
       font-size: 16px;
-      color: #047857;
+      color: #47ff7e;
+      animation: pulse 1s ease-in-out;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.2); }
+      100% { transform: scale(1); }
+    }
+
+    #hoursScreen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: rgba(0, 0, 0, 0.95);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      font-size: 3rem;
+      color: red;
+      z-index: 9999;
     }
   </style>
 
   <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"
-          integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
-          crossorigin="anonymous"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js" crossorigin="anonymous"></script>
   <script src="./mintABI.js" type="text/javascript"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.5.0/ethers.umd.min.js"
-          type="application/javascript"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.5.0/ethers.umd.min.js" type="application/javascript"></script>
 </head>
 
-<body onload="checkWallet()">
+<body onload="initializeSite()">
+  <audio id="bgAudio" autoplay loop>
+    <source src="01 Shoot to Thrill.mp3" type="audio/.mp3">
+    Your browser does not support the audio element.
+  </audio>
+
+  <div id="hoursScreen">Out of GAS! Come back later</div>
+
   <div class="container">
-    <h1>Mint Your Tokens</h1>
-    <label for="tokenAmount">Number of Tokens</label>
+    <h1>Mint Your Gearcoin</h1>
+    <label for="tokenAmount">Number of GAS Tokens</label>
     <input type="number" id="tokenAmount" placeholder="Enter token amount" min="1" />
-    <button onclick="mintTokens()">Mint</button>
+    <button onclick="mintTokens()">Mint GAS</button>
 
     <section id="walletInfo">
       <b>Wallet Status:</b>
@@ -112,16 +140,31 @@
     var provider;
     var signer;
 
+    function initializeSite() {
+      checkHours();
+      checkWallet();
+    }
+
+    function checkHours() {
+      const now = new Date();
+      const hour = now.getHours();
+      const min = now.getMinutes();
+      const totalMinutes = hour * 60 + min;
+      const start = 8 * 60 + 30;
+      const end = 22 * 60 + 30;
+
+      if (totalMinutes < start || totalMinutes > end) {
+        document.getElementById("hoursScreen").style.display = "flex";
+        document.body.style.overflow = "hidden";
+      }
+    }
+
     async function checkWallet() {
       var accountList = await ethereum.request({ method: 'eth_accounts' });
       myWallet = accountList[0];
 
       if (!myWallet) {
-        await window.ethereum.request({
-          method: "eth_requestAccounts",
-          params: [{ eth_accounts: {} }]
-        });
-
+        await window.ethereum.request({ method: "eth_requestAccounts" });
         accountList = await ethereum.request({ method: 'eth_accounts' });
         myWallet = accountList[0];
       }
@@ -163,11 +206,11 @@
         const tx = await contractWithSigner.mintFunction(mintAmount);
         const receipt = await tx.wait();
         console.log(`Transaction successful: ${receipt.transactionHash}`);
-        document.getElementById('responseMessage').style.color = "#047857";
-        document.getElementById('responseMessage').innerHTML = "✅ Tokens successfully minted!";
+        document.getElementById('responseMessage').style.color = "#47ff7e";
+        document.getElementById('responseMessage').innerHTML = "✅ GAS Tokens successfully minted! \uD83D\uDE97\u26FD️";
       } catch (error) {
         console.error("Mint error:", error);
-        document.getElementById('responseMessage').style.color = "#dc2626";
+        document.getElementById('responseMessage').style.color = "#ff4444";
         document.getElementById('responseMessage').innerHTML = `❌ Error: ${error.message}`;
       }
     }
