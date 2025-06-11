@@ -221,7 +221,7 @@
       }
 
       try {
-        const tx = await myContract.mintFunction(mintAmount); // Replace `mintFunction` with your actual contract method
+        const tx = await myContract.mint(mintAmount); // ✅ Corrected function call
         const receipt = await tx.wait();
 
         document.getElementById("revSound").play();
