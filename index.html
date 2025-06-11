@@ -39,7 +39,7 @@
       text-transform: uppercase;
     }
 
-    label, #mintHistoryTitle {
+    label {
       font-size: 16px;
       display: block;
       margin-bottom: 8px;
@@ -103,7 +103,7 @@
 
     .ascii-art {
       margin-top: 2rem;
-      color: #000; /* Changed to black */
+      color: #000;
       font-family: monospace;
       font-size: 12px;
       white-space: pre;
@@ -124,17 +124,6 @@
       background-color: limegreen;
       width: 0;
       transition: width 0.5s ease-in-out;
-    }
-
-    #mintHistory {
-      margin-top: 1rem;
-      font-size: 12px;
-      background-color: #222;
-      padding: 10px;
-      border-radius: 6px;
-      max-height: 100px;
-      overflow-y: auto;
-      color: #aaa;
     }
   </style>
 
@@ -162,16 +151,13 @@
     </div>
 
     <div id="responseMessage"></div>
-
-    <div id="mintHistoryTitle">Mint History:</div>
-    <div id="mintHistory"></div>
   </div>
 
   <div class="ascii-art">
      _________
     |         |
     _o_  _| ___=___ |_  _o_
-   /`-'\ ( )       ( ) /`-'\
+   /`-'\ ( )       ( ) /`-'\ 
    |   |-|  ___*___  |-|   |
    |   | | (-+-+-+-) | |   |
    |   |--\_KAR120C_/--|   |
@@ -242,7 +228,6 @@
         responseEl.classList.add('flash-orange-yellow');
         responseEl.innerHTML = `✅ GAS Tokens successfully minted! <br><button onclick=\"copyHash('${receipt.transactionHash}')\">Copy TX Hash</button>`;
 
-        addMintHistory(receipt.transactionHash);
         updateFuelGauge(await myContract.totalSupply());
       } catch (error) {
         console.error("Mint error:", error);
@@ -253,13 +238,6 @@
 
     function copyHash(hash) {
       navigator.clipboard.writeText(hash).then(() => alert("Copied TX Hash!"));
-    }
-
-    function addMintHistory(txHash) {
-      const history = document.getElementById("mintHistory");
-      const entry = document.createElement("div");
-      entry.textContent = `TX: ${txHash}`;
-      history.prepend(entry);
     }
 
     function updateFuelGauge(supply) {
