@@ -210,6 +210,13 @@
       responseEl.classList.remove('flash-orange-yellow');
       responseEl.style.color = "#f4f4f4";
 
+      if (!myContract) {
+  responseEl.style.color = "#dc2626";
+  responseEl.innerHTML = '❌ Wallet not connected. Please connect your wallet first.';
+  return;
+}
+
+
       if (isNaN(mintAmount) || mintAmount < 5) {
         responseEl.innerHTML = '❌ You must mint at least 5 tokens.';
         return;
