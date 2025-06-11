@@ -173,34 +173,43 @@
     let provider = null;
     let signer = null;
 
-    async function checkWallet() {
-      if (typeof window.ethereum === 'undefined') {
-        alert("MetaMask is not installed. Please install it to use this site.");
-        return;
-      }
+async function checkWallet() {
+  console.log("🔍 Checking for wallet...");
 
-      try {
-        provider = new ethers.providers.Web3Provider(window.ethereum);
-        await provider.send("eth_requestAccounts", []);
-        signer = provider.getSigner();
-        myWallet = await signer.getAddress();
+  if (typeof window.ethereum === 'undefined') {
+    alert("MetaMask is not installed. Please install it to use this site.");
+    return;
+  }
 
-        document.getElementById('walletStatus').textContent = "Wallet Connected: " + shortenAddress(myWallet);
-        document.getElementById('walletStatus').style.color = "#10b981";
-        document.getElementById("walletButton").hidden = true;
+  try {
+    provider = new ethers.providers.Web3Provider(window.ethereum);
+    console.log("📡 Provider set:", provider);
 
-        myContract = new ethers.Contract(mintContractAddress, mintABI, signer);
-        const supply = await myContract.totalSupply();
-        updateFuelGauge(supply);
-      } catch (err) {
-        console.error("Wallet connection failed:", err);
-        document.getElementById('walletStatus').textContent = "Wallet connection failed.";
-      }
-    }
+    await provider.send("eth_requestAccounts", []);
+    console.log("✅ Wallet access granted");
 
-    function shortenAddress(addr) {
-      return addr.slice(0, 6) + "..." + addr.slice(-4);
-    }
+    signer = provider.getSigner();
+    myWallet = await signer.getAddress();
+    console.log("👛 Wallet address:", myWallet);
+
+    document.getElementById('walletStatus').textContent = "Wallet Connected: " + shortenAddress(myWallet);
+    document.getElementById('walletStatus').style.color = "#10b981";
+    document.getElementById("walletButton").hidden = true;
+
+    console.log("🔗 Creating contract...");
+    myContract = new ethers.Contract(mintContractAddress, mintABI, signer);
+    console.log("✅ Contract created:", myContract);
+
+    const supply = await myContract.totalSupply();
+    console.log("⛽ Total supply fetched:", supply.toString());
+
+    updateFuelGauge(supply);
+  } catch (err) {
+    console.error("❌ Wallet connection failed:", err);
+    document.getElementById('walletStatus').textContent = "Wallet connection failed.";
+  }
+}
+
 
     async function mintTokens() {
       var input = document.getElementById('tokenAmount').value;
