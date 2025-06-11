@@ -1,117 +1,278 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Token Minting Page</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-        }
-        input, button {
-            margin-top: 10px;
-            padding: 10px;
-            font-size: 16px;
-        }
-    </style>
-    <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
-    <script src="./mintABI.js" type="text/javascript"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.5.0/ethers.umd.min.js" type="application/javascript"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>GEARcoin Garage</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Roboto', sans-serif;
+      background: url('https://i.imgur.com/z9gZVxE.jpg') no-repeat center center fixed;
+      background-size: cover;
+      color: #f4f4f4;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      flex-direction: column;
+    }
+
+    .container {
+      background-color: rgba(26, 26, 26, 0.95);
+      border: 2px solid #e63946;
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(255, 0, 0, 0.2);
+      padding: 2.5rem;
+      max-width: 480px;
+      width: 100%;
+      text-align: center;
+    }
+
+    h1 {
+      color: #e63946;
+      font-size: 28px;
+      margin-bottom: 1rem;
+      text-transform: uppercase;
+    }
+
+    label, #mintHistoryTitle {
+      font-size: 16px;
+      display: block;
+      margin-bottom: 8px;
+      color: #bbb;
+    }
+
+    input {
+      padding: 12px;
+      width: 100%;
+      margin-bottom: 1rem;
+      border: 1px solid #444;
+      background-color: #2a2a2a;
+      color: #fff;
+      border-radius: 6px;
+      font-size: 16px;
+    }
+
+    button {
+      padding: 12px 24px;
+      background-color: #e63946;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      width: 100%;
+    }
+
+    button:hover {
+      background-color: #ff3e3e;
+    }
+
+    #walletInfo {
+      margin-top: 1.5rem;
+      color: #ccc;
+      font-size: 14px;
+    }
+
+    #walletStatus {
+      display: block;
+      margin-top: 0.5rem;
+    }
+
+    #responseMessage {
+      margin-top: 1.2rem;
+      font-size: 18px;
+      font-weight: bold;
+      min-height: 24px;
+    }
+
+    .flash-orange-yellow {
+      animation: flashOrangeYellow 1s infinite;
+    }
+
+    @keyframes flashOrangeYellow {
+      0%, 100% { color: orange; }
+      50% { color: yellow; }
+    }
+
+    .ascii-art {
+      margin-top: 2rem;
+      color: #666;
+      font-family: monospace;
+      font-size: 12px;
+      white-space: pre;
+      text-align: center;
+    }
+
+    #fuelGauge {
+      width: 100%;
+      height: 20px;
+      background-color: #333;
+      border-radius: 10px;
+      overflow: hidden;
+      margin: 20px 0;
+    }
+
+    #fuelFill {
+      height: 100%;
+      background-color: limegreen;
+      width: 0;
+      transition: width 0.5s ease-in-out;
+    }
+
+    #mintHistory {
+      margin-top: 1rem;
+      font-size: 12px;
+      background-color: #222;
+      padding: 10px;
+      border-radius: 6px;
+      max-height: 100px;
+      overflow-y: auto;
+      color: #aaa;
+    }
+  </style>
+
+  <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+          crossorigin="anonymous"></script>
+  <script src="./mintABI.js" type="text/javascript"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.5.0/ethers.umd.min.js"
+          type="application/javascript"></script>
 </head>
-<body  onload="checkWallet()">
 
-    <h1>My Token Minting Page</h1>
-    <label for="tokenAmount">How many tokens to mint?</label><br>
-    <button onclick="mintTokens()">Mint</button>
+<body onload="checkWallet()">
+  <div class="container">
+    <h1>Mint GEARcoin (GAS)</h1>
+    <label for="tokenAmount">Enter GAS Token Amount</label>
+    <input type="number" id="tokenAmount" placeholder="Min: 5 | Max: 100000" min="5" max="100000" />
+    <button onclick="mintTokens()">Mint Now</button>
 
-    <!----->
-    <section id="walletInfo">
-        <br><br>
-        <b>Wallet connection: </b><br>
-        <span id="walletStatus" style="color:red">Checking for a wallet connection...</span>
-        <button onclick="checkWallet()" id="walletButton">Connect wallet</button>    
-      </section>
-      <!----->
+    <div id="fuelGauge">
+      <div id="fuelFill"></div>
+    </div>
 
-      <h3><span id="responseMessage" style="color:blue"></span></h3>
+    <div id="walletInfo">
+      <strong>Wallet Status:</strong>
+      <span id="walletStatus" style="color:red;">Checking for wallet...</span><br>
+      <button onclick="checkWallet()" id="walletButton">Connect Wallet</button>
+    </div>
 
-    <script>
-        // These vars will be used in multiple functions.
-        var myWallet; 
-        var myContract; 
-        var provider;
-        var signer;
+    <div id="responseMessage"></div>
 
-        async function checkWallet() {
-            
-            // Get wallet addr
-            var accountList = await ethereum.request({ method: 'eth_accounts' });
-            myWallet = accountList[0] ;
-      
-            // If not connected to wallet, open wallet to connect
-            if (!myWallet) {
-                await window.ethereum.request({
-                    method: "eth_requestAccounts", // This checks wallet connection
-                params: [
-                {
-                    eth_accounts: {}
-                }
-                ]
-                });
+    <div id="mintHistoryTitle">Mint History:</div>
+    <div id="mintHistory"></div>
+  </div>
 
-                // Reload wallet address
-                accountList = await ethereum.request({ method: 'eth_accounts' });
-                myWallet = accountList[0] ;
-            };
+  <div class="ascii-art">
+     _________
+    |         |
+    _o_  _| ___=___ |_  _o_
+   /`-\'\ ( )       ( ) /`-'\
+   |   |-|  ___*___  |-|   |
+   |   | | (-+-+-+-) | |   |
+   |   |--\_KAR120C_/--|   |
+   ---                 ---
+  </div>
 
-            // Test again: If not connected to wallet, show a button to allow wallet connection.
-            if (!myWallet) {
-                document.getElementById('walletStatus').innerHTML = "Click here to connect a crypto wallet: " ;
-                document.getElementById('walletButton').hidden = false ;
-            } else {
-                document.getElementById('walletStatus').innerHTML = " &#x2713; Your crypto wallet is connected. <br>" ;
-                document.getElementById('walletStatus').style.color = "#0000FF" ;
-                document.getElementById("walletButton").hidden = true ;
-            };
-            
-            contractConnect() ;   
-        } ;
+  <audio id="revSound" src="https://freesound.org/data/previews/277/277007_5367180-lq.mp3"></audio>
 
-        async function contractConnect() {
-            
-            await window.ethereum.request({ method: 'eth_requestAccounts' });
-            provider = new ethers.providers.Web3Provider(window.ethereum);
-            myContract = new ethers.Contract(mintContractAddress, mintABI, provider);
-            signer = provider.getSigner();
+  <script>
+    const mintContractAddress = "0x303e89C1dE8A48Db4429aD6B22f8f50041a7DeF6";
+    var myWallet;
+    var myContract;
+    var provider;
+    var signer;
 
-            // Test the connection by calling data from the contract
-            var supply = await myContract.totalSupply();
-            console.log("supply="+supply+" tokenAddr:"+mintContractAddress); 
-        }
+    async function checkWallet() {
+      if (!window.ethereum) {
+        alert("Please install MetaMask to use this dApp.");
+        return;
+      }
 
-        async function mintTokens() {
+      try {
+        const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+        myWallet = accounts[0];
 
-            var mintAmount = 3;  // document.getElementById('tokenAmount').value;
-            if (mintAmount <= 0) {
-                alert('Please enter a valid number greater than zero.');
-                return;
-            }
+        if (!myWallet) throw new Error("No wallet found");
 
-            try {
-                const contractWithSigner = myContract.connect(signer);
-                const tx = await contractWithSigner.mintFunction(mintAmount);
-                const receipt = await tx.wait();
-                console.log(`Transaction successful with hash: ${receipt.transactionHash}`);
-                document.getElementById('responseMessage').innerHTML = "Tokens minted." ;
-            } catch (error) {
-                console.error("Error calling mintFunction:", error);
-                document.getElementById('responseMessage').innerHTML = `Error: ${error.message}`;
-            }
-        }
+        document.getElementById('walletStatus').innerHTML = "Wallet Connected";
+        document.getElementById('walletStatus').style.color = "#10b981";
+        document.getElementById("walletButton").hidden = true;
 
-    </script>
+        await contractConnect();
+      } catch (err) {
+        console.error("Wallet connection error:", err);
+        document.getElementById('walletStatus').innerHTML = "Wallet connection failed.";
+      }
+    }
 
+    async function contractConnect() {
+      provider = new ethers.providers.Web3Provider(window.ethereum);
+      myContract = new ethers.Contract(mintContractAddress, mintABI, provider);
+      signer = provider.getSigner();
+
+      const supply = await myContract.totalSupply();
+      updateFuelGauge(supply);
+    }
+
+    async function mintTokens() {
+      var input = document.getElementById('tokenAmount').value;
+      var mintAmount = parseInt(input);
+
+      const responseEl = document.getElementById('responseMessage');
+      responseEl.classList.remove('flash-orange-yellow');
+      responseEl.style.color = "#f4f4f4";
+
+      if (isNaN(mintAmount) || mintAmount < 5) {
+        responseEl.innerHTML = '❌ You must mint at least 5 tokens.';
+        return;
+      }
+
+      if (mintAmount > 100000) {
+        responseEl.innerHTML = '❌ You cannot mint more than 100,000 tokens at once.';
+        return;
+      }
+
+      try {
+        const contractWithSigner = myContract.connect(signer);
+        const tx = await contractWithSigner.mintFunction(mintAmount);
+        const receipt = await tx.wait();
+
+        document.getElementById("revSound").play();
+        responseEl.classList.add('flash-orange-yellow');
+        responseEl.innerHTML = `✅ GAS Tokens successfully minted! <br><button onclick=\"copyHash('${receipt.transactionHash}')\">Copy TX Hash</button>`;
+
+        addMintHistory(receipt.transactionHash);
+        updateFuelGauge(await myContract.totalSupply());
+
+      } catch (error) {
+        console.error("Mint error:", error);
+        responseEl.style.color = "#dc2626";
+        responseEl.innerHTML = `❌ Error: ${error.message}`;
+      }
+    }
+
+    function copyHash(hash) {
+      navigator.clipboard.writeText(hash).then(() => alert("Copied TX Hash!"));
+    }
+
+    function addMintHistory(txHash) {
+      const history = document.getElementById("mintHistory");
+      const entry = document.createElement("div");
+      entry.textContent = `TX: ${txHash}`;
+      history.prepend(entry);
+    }
+
+    function updateFuelGauge(supply) {
+      let percent = Math.min((supply / 100000) * 100, 100);
+      document.getElementById("fuelFill").style.width = percent + "%";
+    }
+  </script>
 </body>
 </html>
