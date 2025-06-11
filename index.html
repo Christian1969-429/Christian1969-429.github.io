@@ -1,223 +1,117 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Gearcoin Minting</title>
-  <style>
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #000;
-      margin: 0;
-      padding: 0;
-      color: #fff;
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-    }
-
-    .container {
-      background: #111;
-      padding: 2rem 2.5rem;
-      border-radius: 12px;
-      box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2);
-      text-align: center;
-      max-width: 400px;
-      width: 100%;
-      margin: auto;
-    }
-
-    h1 {
-      color: #fff;
-      margin-bottom: 1rem;
-    }
-
-    label {
-      font-size: 16px;
-      display: block;
-      margin-bottom: 8px;
-      color: #ccc;
-    }
-
-    input {
-      padding: 10px;
-      width: 100%;
-      margin-bottom: 1rem;
-      border: 1px solid #444;
-      background-color: #222;
-      color: #fff;
-      border-radius: 6px;
-      font-size: 16px;
-    }
-
-    button {
-      padding: 10px 20px;
-      background-color: #e63946;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      font-size: 16px;
-      cursor: pointer;
-      margin-top: 10px;
-      transition: background 0.3s ease;
-    }
-
-    button:hover {
-      background-color: #ff4d4d;
-    }
-
-    #walletInfo {
-      margin-top: 2rem;
-      color: #ccc;
-      font-size: 14px;
-    }
-
-    #walletStatus {
-      display: block;
-      margin-top: 0.5rem;
-    }
-
-    #responseMessage {
-      margin-top: 1rem;
-      font-size: 18px;
-      font-weight: bold;
-      animation: exhaustPop 0.6s ease-in-out;
-    }
-
-    @keyframes exhaustPop {
-      0% { transform: scale(0.8); opacity: 0.2; }
-      50% { transform: scale(1.2); opacity: 1; }
-      100% { transform: scale(1); opacity: 1; }
-    }
-
-    @keyframes flashOrangeYellow {
-      0%, 100% { color: orange; }
-      50% { color: yellow; }
-    }
-
-    .flash-orange-yellow {
-      animation: flashOrangeYellow 1s infinite;
-    }
-
-    .ascii-art {
-      width: 100%;
-      margin-top: auto;
-      padding: 1rem;
-      font-family: monospace;
-      font-size: 12px;
-      color: #888;
-      white-space: pre;
-      text-align: center;
-    }
-  </style>
-
-  <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"
-          integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
-          crossorigin="anonymous"></script>
-  <script src="./mintABI.js" type="text/javascript"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.5.0/ethers.umd.min.js"
-          type="application/javascript"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Token Minting Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        input, button {
+            margin-top: 10px;
+            padding: 10px;
+            font-size: 16px;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script src="./mintABI.js" type="text/javascript"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.5.0/ethers.umd.min.js" type="application/javascript"></script>
 </head>
+<body  onload="checkWallet()">
 
-<body onload="checkWallet()">
-  <div class="container">
-    <h1>Mint Your Gearcoin (GAS)</h1>
-    <label for="tokenAmount">Number of GAS Tokens</label>
-    <input type="number" id="tokenAmount" placeholder="Enter token amount" min="5" max="100000" />
+    <h1>My Token Minting Page</h1>
+    <label for="tokenAmount">How many tokens to mint?</label><br>
     <button onclick="mintTokens()">Mint</button>
 
+    <!----->
     <section id="walletInfo">
-      <b>Wallet Status:</b>
-      <span id="walletStatus" style="color:red;">Checking for a wallet connection...</span><br>
-      <button onclick="checkWallet()" id="walletButton">Connect Wallet</button>
-    </section>
+        <br><br>
+        <b>Wallet connection: </b><br>
+        <span id="walletStatus" style="color:red">Checking for a wallet connection...</span>
+        <button onclick="checkWallet()" id="walletButton">Connect wallet</button>    
+      </section>
+      <!----->
 
-    <h3><span id="responseMessage"></span></h3>
-  </div>
+      <h3><span id="responseMessage" style="color:blue"></span></h3>
 
-  <div class="ascii-art">
-    
- _________
-|         |
-_o_  _| ___=___ |_  _o_
-/`-'\ ( )       ( ) /`-'\
-|   |-|  ___*___  |-|   |
-|   | | (-+-+-+-) | |   |
-|   |--\_KAR120C_/--|   |
----                 ---
-  </div>
+    <script>
+        // These vars will be used in multiple functions.
+        var myWallet; 
+        var myContract; 
+        var provider;
+        var signer;
 
-  <script>
-    const mintContractAddress = "0x303e89C1dE8A48Db4429aD6B22f8f50041a7DeF6"; // Replace with actual address
-    var myWallet;
-    var myContract;
-    var provider;
-    var signer;
+        async function checkWallet() {
+            
+            // Get wallet addr
+            var accountList = await ethereum.request({ method: 'eth_accounts' });
+            myWallet = accountList[0] ;
+      
+            // If not connected to wallet, open wallet to connect
+            if (!myWallet) {
+                await window.ethereum.request({
+                    method: "eth_requestAccounts", // This checks wallet connection
+                params: [
+                {
+                    eth_accounts: {}
+                }
+                ]
+                });
 
-    async function checkWallet() {
-      if (!window.ethereum) {
-        alert("Please install MetaMask to use this dApp.");
-        return;
-      }
+                // Reload wallet address
+                accountList = await ethereum.request({ method: 'eth_accounts' });
+                myWallet = accountList[0] ;
+            };
 
-      try {
-        const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
-        myWallet = accounts[0];
+            // Test again: If not connected to wallet, show a button to allow wallet connection.
+            if (!myWallet) {
+                document.getElementById('walletStatus').innerHTML = "Click here to connect a crypto wallet: " ;
+                document.getElementById('walletButton').hidden = false ;
+            } else {
+                document.getElementById('walletStatus').innerHTML = " &#x2713; Your crypto wallet is connected. <br>" ;
+                document.getElementById('walletStatus').style.color = "#0000FF" ;
+                document.getElementById("walletButton").hidden = true ;
+            };
+            
+            contractConnect() ;   
+        } ;
 
-        if (!myWallet) throw new Error("No wallet found");
+        async function contractConnect() {
+            
+            await window.ethereum.request({ method: 'eth_requestAccounts' });
+            provider = new ethers.providers.Web3Provider(window.ethereum);
+            myContract = new ethers.Contract(mintContractAddress, mintABI, provider);
+            signer = provider.getSigner();
 
-        document.getElementById('walletStatus').innerHTML = "Wallet Connected";
-        document.getElementById('walletStatus').style.color = "#10b981";
-        document.getElementById("walletButton").hidden = true;
+            // Test the connection by calling data from the contract
+            var supply = await myContract.totalSupply();
+            console.log("supply="+supply+" tokenAddr:"+mintContractAddress); 
+        }
 
-        await contractConnect();
-      } catch (err) {
-        console.error("Wallet connection error:", err);
-        document.getElementById('walletStatus').innerHTML = "Wallet connection failed.";
-      }
-    }
+        async function mintTokens() {
 
-    async function contractConnect() {
-      provider = new ethers.providers.Web3Provider(window.ethereum);
-      myContract = new ethers.Contract(mintContractAddress, mintABI, provider);
-      signer = provider.getSigner();
+            var mintAmount = 3;  // document.getElementById('tokenAmount').value;
+            if (mintAmount <= 0) {
+                alert('Please enter a valid number greater than zero.');
+                return;
+            }
 
-      const supply = await myContract.totalSupply();
-      console.log("Supply = " + supply + " | Contract Address = " + mintContractAddress);
-    }
+            try {
+                const contractWithSigner = myContract.connect(signer);
+                const tx = await contractWithSigner.mintFunction(mintAmount);
+                const receipt = await tx.wait();
+                console.log(`Transaction successful with hash: ${receipt.transactionHash}`);
+                document.getElementById('responseMessage').innerHTML = "Tokens minted." ;
+            } catch (error) {
+                console.error("Error calling mintFunction:", error);
+                document.getElementById('responseMessage').innerHTML = `Error: ${error.message}`;
+            }
+        }
 
-    async function mintTokens() {
-      var input = document.getElementById('tokenAmount').value;
-      var mintAmount = parseInt(input);
+    </script>
 
-      if (isNaN(mintAmount) || mintAmount < 5) {
-        alert('You must mint at least 5 tokens.');
-        return;
-      }
-
-      if (mintAmount > 100000) {
-        alert('You cannot mint more than 100,000 tokens at once.');
-        return;
-      }
-
-      try {
-        const contractWithSigner = myContract.connect(signer);
-        const tx = await contractWithSigner.mintFunction(mintAmount);
-        const receipt = await tx.wait();
-        console.log(`Transaction successful: ${receipt.transactionHash}`);
-
-        const responseEl = document.getElementById('responseMessage');
-        responseEl.classList.add('flash-orange-yellow');
-        responseEl.innerHTML = `GAS Tokens successfully minted! 🚗⛽️`;
-      } catch (error) {
-        console.error("Mint error:", error);
-        const responseEl = document.getElementById('responseMessage');
-        responseEl.classList.remove('flash-orange-yellow');
-        responseEl.style.color = "#dc2626";
-        responseEl.innerHTML = `❌ Error: ${error.message}`;
-      }
-    }
-  </script>
 </body>
 </html>
