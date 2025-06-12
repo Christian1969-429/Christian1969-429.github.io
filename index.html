@@ -133,7 +133,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.5.0/ethers.umd.min.js"></script>
 </head>
 
-<body onload="checkWallet()">
+<body>
   <div class="container">
     <h1>Mint GEARcoin (GAS)</h1>
     <label for="tokenAmount">Enter GAS Token Amount</label>
@@ -265,6 +265,19 @@ async function checkWallet() {
       let percent = Math.min((supply / 100000) * 100, 100);
       document.getElementById("fuelFill").style.width = percent + "%";
     }
+
+
+
+
+    document.addEventListener("DOMContentLoaded", () => {
+      checkWallet();
+    });
+
+
+
+
+
+    
   </script>
 </body>
 </html>
