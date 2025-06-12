@@ -173,47 +173,47 @@
     let provider = null;
     let signer = null;
 
-  function shortenAddress(addr) {
-  return addr.slice(0, 6) + "..." + addr.slice(-4);
-}
+    function shortenAddress(addr) {
+      return addr.slice(0, 6) + "..." + addr.slice(-4);
+    }
 
     
-async function checkWallet() {
-  console.log("🔍 Checking for wallet...");
+    async function checkWallet() {
+      console.log("🔍 Checking for wallet...");
 
-  if (typeof window.ethereum === 'undefined') {
-    alert("MetaMask is not installed. Please install it to use this site.");
-    return;
-  }
+      if (typeof window.ethereum === 'undefined') {
+        alert("MetaMask is not installed. Please install it to use this site.");
+        return;
+      }
 
-  try {
-    provider = new ethers.providers.Web3Provider(window.ethereum);
-    console.log("📡 Provider set:", provider);
+      try {
+        provider = new ethers.providers.Web3Provider(window.ethereum);
+        console.log("📡 Provider set:", provider);
 
-    await provider.send("eth_requestAccounts", []);
-    console.log("✅ Wallet access granted");
+        await provider.send("eth_requestAccounts", []);
+        console.log("✅ Wallet access granted");
 
-    signer = provider.getSigner();
-    myWallet = await signer.getAddress();
-    console.log("👛 Wallet address:", myWallet);
+        signer = provider.getSigner();
+        myWallet = await signer.getAddress();
+        console.log("👛 Wallet address:", myWallet);
 
-    document.getElementById('walletStatus').textContent = "Wallet Connected: " + shortenAddress(myWallet);
-    document.getElementById('walletStatus').style.color = "#10b981";
-    document.getElementById("walletButton").hidden = true;
+        document.getElementById('walletStatus').textContent = "Wallet Connected: " + shortenAddress(myWallet);
+        document.getElementById('walletStatus').style.color = "#10b981";
+        document.getElementById("walletButton").hidden = true;
 
-    console.log("🔗 Creating contract...");
-    myContract = new ethers.Contract(mintContractAddress, mintABI, signer);
-    console.log("✅ Contract created:", myContract);
+        console.log("🔗 Creating contract...");
+        myContract = new ethers.Contract(mintContractAddress, mintABI, signer);
+        console.log("✅ Contract created:", myContract);
 
-    const supply = await myContract.totalSupply();
-    console.log("⛽ Total supply fetched:", supply.toString());
+        const supply = await myContract.totalSupply();
+        console.log("⛽ Total supply fetched:", supply.toString());
 
-    updateFuelGauge(supply);
-  } catch (err) {
-    console.error("❌ Wallet connection failed:", err);
-    document.getElementById('walletStatus').textContent = "Wallet connection failed.";
-  }
-}
+        updateFuelGauge(supply);
+      } catch (err) {
+        console.error("❌ Wallet connection failed:", err);
+        document.getElementById('walletStatus').textContent = "Wallet connection failed.";
+      }
+    }
 
 
     async function mintTokens() {
@@ -225,10 +225,10 @@ async function checkWallet() {
       responseEl.style.color = "#f4f4f4";
 
       if (!myContract) {
-  responseEl.style.color = "#dc2626";
-  responseEl.innerHTML = '❌ Wallet not connected. Please connect your wallet first.';
-  return;
-}
+        responseEl.style.color = "#dc2626"; 
+        responseEl.innerHTML = '❌ Wallet not connected. Please connect your wallet first.';
+        return;
+      }
 
 
       if (isNaN(mintAmount) || mintAmount < 5) {
@@ -277,7 +277,7 @@ async function checkWallet() {
 
 
 
-    
+
   </script>
 </body>
 </html>
