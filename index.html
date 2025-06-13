@@ -242,7 +242,7 @@
       }
 
       try {
-        const tx = await myContract.mint(mintAmount); // ✅ Corrected function call
+        const tx = await myContract.mintFunction(mintAmount); // ✅ Corrected function call
         const receipt = await tx.wait();
 
         document.getElementById("revSound").play();

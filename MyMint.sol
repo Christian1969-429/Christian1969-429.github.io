@@ -11,7 +11,7 @@ contract MyMint is ERC20 {
 
     constructor() ERC20(tokenName, tokenSymbol) {}
 
-    function mint(uint256 amountToMint) public {
+    function mintFunction(uint256 amountToMint) public {
         // Enforce min and max minting limits
         require(amountToMint >= 5, "You must mint at least 5 tokens.");
         require(amountToMint <= 100000, "You cannot mint more than 100,000 tokens at a time.");

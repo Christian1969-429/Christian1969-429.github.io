@@ -150,7 +150,7 @@ const mintABI = [
 				"type": "uint256"
 			}
 		],
-		"name": "mint",
+		"name": "mintFunction",
 		"outputs": [],
 		"stateMutability": "nonpayable",
 		"type": "function"
